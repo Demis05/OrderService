@@ -1,34 +1,26 @@
 package com.exadel.fedorov.domain;
 
-
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Data
-@Table(name = "orders")
-@Entity
 public class Order {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
-    @Column(name = "total_price")
-    private Integer totalPrice;
+    private BigDecimal totalPrice;
     private Timestamp time;
-    private String status;
-
-    @Column(name = "status_description")
+    private OrderStatus status;
     private String statusDescription;
 
     public Order() {
     }
 
+    public Order(BigDecimal totalPrice, Timestamp time, OrderStatus status, String statusDescription) {
+        this.totalPrice = totalPrice;
+        this.time = time;
+        this.status = status;
+        this.statusDescription = statusDescription;
+    }
 }
