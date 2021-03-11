@@ -9,9 +9,9 @@ import java.sql.Timestamp;
 public class Order {
 
     private Long id;
-    private BigDecimal totalPrice;
     private Timestamp time;
     private OrderStatus status;
+    private BigDecimal totalPrice;
     private String statusDescription;
 
     public Order() {
