@@ -1,4 +1,4 @@
-package com.exadel.fedorov.config;
+package com.exadel.fedorov.orders.config;
 
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;

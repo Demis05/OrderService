@@ -1,7 +1,8 @@
-package com.exadel.fedorov.rest;
+package com.exadel.fedorov.orders.controllers;
 
-import com.exadel.fedorov.domain.Order;
-import com.exadel.fedorov.service.OrderService;
+import com.exadel.fedorov.orders.domain.Order;
+import com.exadel.fedorov.orders.dto.dto_request.ReqOrderItemDTO;
+import com.exadel.fedorov.orders.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,13 +17,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 @RequestMapping("/rest/orders")
 @RestController
-public class OrderRest {
+public class OrderController {
 
     @Autowired
     private OrderService orderService;
@@ -51,21 +54,17 @@ public class OrderRest {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ResponseEntity<Order> saveOrder(@RequestBody Order order) {
-        HttpHeaders headers = new HttpHeaders();
-        if (order == null) {
+    public ResponseEntity<Order> saveOrder(@RequestBody List<ReqOrderItemDTO> orderItems) {
+        if (orderItems.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        orderService.create(order);
+        String clientName = "FirstName LastName";
+        BigDecimal price = new BigDecimal(200);
 
+        Order order = new Order(clientName, price, "OK");
 
-
-
-
-
-
-
-        return new ResponseEntity<>(headers, HttpStatus.CREATED);
+        orderService.createOrder(order,orderItems);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @ResponseStatus(HttpStatus.OK)

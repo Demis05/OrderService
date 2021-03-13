@@ -1,4 +1,4 @@
-package com.exadel.fedorov.config;
+package com.exadel.fedorov.orders.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;

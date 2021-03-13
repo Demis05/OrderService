@@ -1,4 +1,4 @@
-package com.exadel.fedorov.domain;
+package com.exadel.fedorov.orders.domain;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,4 +22,5 @@ public enum OrderStatus {
     public String getStatus() {
         return status;
     }
+
 }
