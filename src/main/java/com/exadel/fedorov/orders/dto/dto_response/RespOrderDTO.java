@@ -1,7 +1,6 @@
 package com.exadel.fedorov.orders.dto.dto_response;
 
 import lombok.Value;
-
 import java.math.BigDecimal;
 import java.util.List;
 

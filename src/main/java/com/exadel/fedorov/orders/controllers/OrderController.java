@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -44,6 +45,7 @@ public class OrderController {
         if (orderId == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        System.out.println(orderId);
         Optional<Order> order = orderService.findById(orderId);
         if (!order.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -54,7 +56,15 @@ public class OrderController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ResponseEntity<Order> saveOrder(@RequestBody List<ReqOrderItemDTO> orderItems) {
+//    public ResponseEntity<Order> saveOrder(@RequestBody List<ReqOrderItemDTO> orderItems) {
+    public ResponseEntity<Order> saveOrder(@RequestBody ReqOrderItemDTO item) {
+
+        ArrayList<ReqOrderItemDTO> orderItems = new ArrayList<>();
+        orderItems.add(new ReqOrderItemDTO(1, new BigDecimal(111.00), 1));
+        orderItems.add(new ReqOrderItemDTO(2, new BigDecimal(112.00), 1));
+        orderItems.add(new ReqOrderItemDTO(3, new BigDecimal(113.00), 1));
+
+        System.out.println(orderItems.size());
         if (orderItems.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -63,7 +73,7 @@ public class OrderController {
 
         Order order = new Order(clientName, price, "OK");
 
-        orderService.createOrder(order,orderItems);
+        orderService.createOrder(order, orderItems);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
