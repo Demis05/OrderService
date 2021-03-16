@@ -1,10 +1,10 @@
 package com.exadel.fedorov.orders.repository;
 
 import com.exadel.fedorov.orders.domain.Order;
+import com.exadel.fedorov.orders.domain.OrderStatus;
 import com.exadel.fedorov.orders.dto.dto_request.ReqOrderItemDTO;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.postgresql.util.PGobject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -13,7 +13,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,19 +34,15 @@ public class OrderDAO {
     private static final String CLIENT_NAME_IN_FIELD = "client_name_in";
     private static final String TOTAL_PRICE_IN_FIELD = "total_price_in";
     private static final String IN_ARRAY_FIELD = "in_array";
-
-
     private static final String STATUS_DESCRIPTION_FIELD = "status_description";
     private static final String CLIENT_NAME_FIELD = "client_name";
     private static final String TOTAL_PRICE_FIELD = "total_price";
 
-
     private static final String ID_FIELD = "id";
-    private static final String CREATE_ORDER_PROCEDURE = "create_order_procedure";
+    private static final String CREATE_ORDER_PROCEDURE = "create_order_function";
     private static final String PRODUCT_ID_FIELD = "product_id";
     private static final String PRODUCT_COUNT_FIELD = "product_count";
     private static final String POSITION_PRICE_FIELD = "position_price";
-    private static final String JSONB_TYPE = "jsonb";
 
 
     private JdbcTemplate jdbcTemplate;
@@ -75,9 +70,11 @@ public class OrderDAO {
                 new Object[]{id},
                 (rs, rowNum) ->
                         Optional.of(new Order(
+                                rs.getTimestamp(TIME_FIELD),
+                                OrderStatus.valueOf(rs.getString(STATUS_FIELD)),
                                 rs.getString(CLIENT_NAME_FIELD),
                                 rs.getBigDecimal(TOTAL_PRICE_FIELD),
-                                rs.getString(STATUS_DESCRIPTION_IN_FIELD)
+                                rs.getString(STATUS_DESCRIPTION_FIELD)
                         ))
         );
     }
@@ -97,6 +94,8 @@ public class OrderDAO {
                 FIND_ALL_QUERY,
                 (rs, rowNum) ->
                         new Order(
+                                rs.getTimestamp(TIME_FIELD),
+                                OrderStatus.valueOf(rs.getString(STATUS_FIELD)),
                                 rs.getString(CLIENT_NAME_FIELD),
                                 rs.getBigDecimal(TOTAL_PRICE_FIELD),
                                 rs.getString(STATUS_DESCRIPTION_FIELD)
@@ -104,17 +103,10 @@ public class OrderDAO {
         );
     }
 
-    /*
-   status_description_in text,
-   client_name_in text,
-   total_price_in money,
-   in_array jsonb
-   */
     public void createOrderWithProcedure(Order order, List<ReqOrderItemDTO> orderItems) {
 
         simpleJdbcCall = simpleJdbcCall.withProcedureName(CREATE_ORDER_PROCEDURE);
         JSONArray inArray = new JSONArray();
-        final PGobject jsonbObject = new PGobject();
 
         for (ReqOrderItemDTO item : orderItems) {
             JSONObject jsonItem = new JSONObject();
@@ -123,18 +115,11 @@ public class OrderDAO {
             jsonItem.put(POSITION_PRICE_FIELD, item.getPrice());
             inArray.put(jsonItem);
         }
-        try {
-            jsonbObject.setType(JSONB_TYPE);
-            jsonbObject.setValue(inArray.toString());
-        } catch (SQLException exc) {
-            System.out.println(exc.getMessage());
-        }
         SqlParameterSource in = new MapSqlParameterSource()
                 .addValue(STATUS_DESCRIPTION_IN_FIELD, order.getStatusDescription())
                 .addValue(CLIENT_NAME_IN_FIELD, order.getClientName())
-                .addValue(TOTAL_PRICE_IN_FIELD, order.getTotalPrice())
-                .addValue(IN_ARRAY_FIELD, jsonbObject);
+                .addValue(TOTAL_PRICE_IN_FIELD, Double.valueOf(order.getTotalPrice().toString()))
+                .addValue(IN_ARRAY_FIELD, inArray);
         simpleJdbcCall.execute(in);
-
     }
 }

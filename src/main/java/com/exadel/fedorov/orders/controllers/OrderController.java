@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -64,14 +63,11 @@ public class OrderController {
         orderItems.add(new ReqOrderItemDTO(2, new BigDecimal(112.00), 1));
         orderItems.add(new ReqOrderItemDTO(3, new BigDecimal(113.00), 1));
 
-        System.out.println(orderItems.size());
         if (orderItems.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        String clientName = "FirstName LastName";
-        BigDecimal price = new BigDecimal(200);
 
-        Order order = new Order(clientName, price, "OK");
+        Order order = new Order("FirstName LastName", new BigDecimal(200), "OK");
 
         orderService.createOrder(order, orderItems);
         return new ResponseEntity<>(HttpStatus.CREATED);

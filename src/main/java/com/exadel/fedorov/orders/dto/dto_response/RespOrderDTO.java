@@ -10,5 +10,6 @@ public class RespOrderDTO {
     List<RespOrderItemDTO> positions;
     BigDecimal orderPrice;
     Integer count;
+    String clientName;
 
 }
