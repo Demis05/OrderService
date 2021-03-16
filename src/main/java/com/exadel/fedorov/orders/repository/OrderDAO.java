@@ -2,6 +2,7 @@ package com.exadel.fedorov.orders.repository;
 
 import com.exadel.fedorov.orders.domain.Order;
 import com.exadel.fedorov.orders.domain.OrderStatus;
+import com.exadel.fedorov.orders.dto.dto_request.ReqOrderDTO;
 import com.exadel.fedorov.orders.dto.dto_request.ReqOrderItemDTO;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -103,12 +104,12 @@ public class OrderDAO {
         );
     }
 
-    public void createOrderWithProcedure(Order order, List<ReqOrderItemDTO> orderItems) {
+    public void createOrderWithProcedure(ReqOrderDTO reqOrderDTO) {
 
         simpleJdbcCall = simpleJdbcCall.withProcedureName(CREATE_ORDER_PROCEDURE);
         JSONArray inArray = new JSONArray();
 
-        for (ReqOrderItemDTO item : orderItems) {
+        for (ReqOrderItemDTO item : reqOrderDTO.getPositions()) {
             JSONObject jsonItem = new JSONObject();
             jsonItem.put(PRODUCT_ID_FIELD, item.getProductId());
             jsonItem.put(PRODUCT_COUNT_FIELD, item.getCount());
@@ -116,9 +117,9 @@ public class OrderDAO {
             inArray.put(jsonItem);
         }
         SqlParameterSource in = new MapSqlParameterSource()
-                .addValue(STATUS_DESCRIPTION_IN_FIELD, order.getStatusDescription())
-                .addValue(CLIENT_NAME_IN_FIELD, order.getClientName())
-                .addValue(TOTAL_PRICE_IN_FIELD, Double.valueOf(order.getTotalPrice().toString()))
+                .addValue(STATUS_DESCRIPTION_IN_FIELD, reqOrderDTO.getStatus_description())
+                .addValue(CLIENT_NAME_IN_FIELD, reqOrderDTO.getClientName())
+                .addValue(TOTAL_PRICE_IN_FIELD, Double.valueOf(reqOrderDTO.getTotal().toString()))
                 .addValue(IN_ARRAY_FIELD, inArray);
         simpleJdbcCall.execute(in);
     }

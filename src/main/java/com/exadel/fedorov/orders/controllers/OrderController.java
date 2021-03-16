@@ -1,6 +1,7 @@
 package com.exadel.fedorov.orders.controllers;
 
 import com.exadel.fedorov.orders.domain.Order;
+import com.exadel.fedorov.orders.dto.dto_request.ReqOrderDTO;
 import com.exadel.fedorov.orders.dto.dto_request.ReqOrderItemDTO;
 import com.exadel.fedorov.orders.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -27,6 +27,8 @@ import java.util.Optional;
 @RestController
 public class OrderController {
 
+    private static final String DEFAULT_CLIENT_NAME = "FirstName LastName";
+    private static final String DEFAULT_STATUS_DESCRIPTION = "OK";
     @Autowired
     private OrderService orderService;
 
@@ -44,32 +46,21 @@ public class OrderController {
         if (orderId == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        System.out.println(orderId);
         Optional<Order> order = orderService.findById(orderId);
         if (!order.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
         return new ResponseEntity(order, HttpStatus.OK);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-//    public ResponseEntity<Order> saveOrder(@RequestBody List<ReqOrderItemDTO> orderItems) {
-    public ResponseEntity<Order> saveOrder(@RequestBody ReqOrderItemDTO item) {
-
-        ArrayList<ReqOrderItemDTO> orderItems = new ArrayList<>();
-        orderItems.add(new ReqOrderItemDTO(1, new BigDecimal(111.00), 1));
-        orderItems.add(new ReqOrderItemDTO(2, new BigDecimal(112.00), 1));
-        orderItems.add(new ReqOrderItemDTO(3, new BigDecimal(113.00), 1));
-
+    public ResponseEntity<Order> saveOrder(@RequestBody List<ReqOrderItemDTO> orderItems) {
         if (orderItems.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
-        Order order = new Order("FirstName LastName", new BigDecimal(200), "OK");
-
-        orderService.createOrder(order, orderItems);
+        orderService.createOrder(
+                new ReqOrderDTO(orderItems, new BigDecimal(200), DEFAULT_CLIENT_NAME, DEFAULT_STATUS_DESCRIPTION));
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

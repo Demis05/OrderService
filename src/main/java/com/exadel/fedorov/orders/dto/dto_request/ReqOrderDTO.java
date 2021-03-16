@@ -11,5 +11,6 @@ public class ReqOrderDTO {
     List<ReqOrderItemDTO> positions;
     BigDecimal total;
     String clientName;
+    String status_description;
 
 }

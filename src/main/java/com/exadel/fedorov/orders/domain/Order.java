@@ -29,4 +29,5 @@ public class Order {
         this.totalPrice = totalPrice;
         this.statusDescription = statusDescription;
     }
+
 }

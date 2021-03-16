@@ -1,6 +1,7 @@
 package com.exadel.fedorov.orders.service;
 
 import com.exadel.fedorov.orders.domain.Order;
+import com.exadel.fedorov.orders.dto.dto_request.ReqOrderDTO;
 import com.exadel.fedorov.orders.dto.dto_request.ReqOrderItemDTO;
 import com.exadel.fedorov.orders.repository.OrderDAO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,8 @@ public class OrderService {
         orderRepository.deleteById(id);
     }
 
-    public void createOrder(Order order, List<ReqOrderItemDTO> orderItems) {
-        orderRepository.createOrderWithProcedure(order, orderItems);
+    public void createOrder(ReqOrderDTO reqOrderDTO) {
+        orderRepository.createOrderWithProcedure(reqOrderDTO);
     }
+
 }
