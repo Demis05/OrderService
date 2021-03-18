@@ -33,7 +33,7 @@ public class OrderController {
     private OrderService orderService;
 
     @GetMapping
-    public ResponseEntity<List<Order>> getOrders() {
+    public ResponseEntity<List<Order>> readAll() {
         List<Order> orders = orderService.findAll();
         if (orders.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -42,7 +42,7 @@ public class OrderController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Order> getOrder(@PathVariable("id") Long orderId) {
+    public ResponseEntity<Order> read(@PathVariable("id") Long orderId) {
         if (orderId == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -55,24 +55,28 @@ public class OrderController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ResponseEntity<Order> saveOrder(@RequestBody List<ReqOrderItemDTO> orderItems) {
+    public ResponseEntity<Order> create(@RequestBody List<ReqOrderItemDTO> orderItems) {
         if (orderItems.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        BigDecimal total = new BigDecimal(0);
+        for (ReqOrderItemDTO item : orderItems) {
+            total = total.add(item.getPrice().multiply(BigDecimal.valueOf(item.getCount())));
+        }
         orderService.createOrder(
-                new ReqOrderDTO(orderItems, new BigDecimal(200), DEFAULT_CLIENT_NAME, DEFAULT_STATUS_DESCRIPTION));
+                new ReqOrderDTO(orderItems, total, DEFAULT_CLIENT_NAME, DEFAULT_STATUS_DESCRIPTION));
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Order> updateOrder(@PathVariable("id") Long id, @RequestBody Order order) {
+    public ResponseEntity<Order> update(@PathVariable("id") Long id, @RequestBody Order order) {
         HttpHeaders headers = new HttpHeaders();
 
         if (order == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        if (Objects.nonNull(orderService.findById((order.getId())))) {
+        if (Objects.nonNull(orderService.findById(id))) {
             orderService.update(order);
         }
         return new ResponseEntity<>(order, headers, HttpStatus.OK);
@@ -81,10 +85,6 @@ public class OrderController {
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Order> deleteOrder(@PathVariable("id") Long id) {
-        Optional<Order> order = orderService.findById(id);
-        if (!order.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
         orderService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

@@ -83,7 +83,7 @@ public class OrderDAO {
     public void update(Order order) {
         jdbcTemplate.update(
                 UPDATE_QUERY,
-                order.getStatus(), order.getStatusDescription(), order.getTotalPrice(), order.getId());
+                order.getStatus(), order.getStatusDescription(), order.getId());
     }
 
     public void deleteById(Long id) {
@@ -117,7 +117,7 @@ public class OrderDAO {
             inArray.put(jsonItem);
         }
         SqlParameterSource in = new MapSqlParameterSource()
-                .addValue(STATUS_DESCRIPTION_IN_FIELD, reqOrderDTO.getStatus_description())
+                .addValue(STATUS_DESCRIPTION_IN_FIELD, reqOrderDTO.getStatusDescription())
                 .addValue(CLIENT_NAME_IN_FIELD, reqOrderDTO.getClientName())
                 .addValue(TOTAL_PRICE_IN_FIELD, Double.valueOf(reqOrderDTO.getTotal().toString()))
                 .addValue(IN_ARRAY_FIELD, inArray);
