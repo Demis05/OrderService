@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @ToString
 public class ReqOrderItemDTO {
 
-    Integer productId;
+    Long productId;
     BigDecimal price;
     Integer count;
 

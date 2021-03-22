@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 @Value
 public class RespOrderItemDTO {
 
-    Integer productId;
+    Long productId;
     BigDecimal totalPrice;
     Integer count;
 

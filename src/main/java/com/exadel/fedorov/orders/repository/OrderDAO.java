@@ -1,6 +1,7 @@
 package com.exadel.fedorov.orders.repository;
 
 import com.exadel.fedorov.orders.domain.Order;
+import com.exadel.fedorov.orders.domain.OrderDetail;
 import com.exadel.fedorov.orders.domain.OrderStatus;
 import com.exadel.fedorov.orders.dto.dto_request.ReqOrderDTO;
 import com.exadel.fedorov.orders.dto.dto_request.ReqOrderItemDTO;
@@ -24,7 +25,8 @@ public class OrderDAO {
     private static final String CREATE_QUERY = "INSERT INTO public.orders(status, status_description, time, total_price) VALUES (?, ?, ?, ?);";
     private static final String FIND_BY_ID_QUERY = "select * from orders where id = ?";
     private static final String UPDATE_QUERY = "UPDATE public.orders SET status=?, status_description=?, total_price=? WHERE id = ?;";
-    private static final String FIND_ALL_QUERY = "select * from public.orders";
+    private static final String FIND_ALL_QUERY = "select * from public.orders ORDER BY id ASC";
+    private static final String FIND_ORDER_DETAILS = "select * from public.order_details where order_id=%s";
     private static final String DELETE_QUERY = "delete from public.orders where id = ?";
 
 
@@ -44,7 +46,7 @@ public class OrderDAO {
     private static final String PRODUCT_ID_FIELD = "product_id";
     private static final String PRODUCT_COUNT_FIELD = "product_count";
     private static final String POSITION_PRICE_FIELD = "position_price";
-
+    private static final String ORDER_ID_FIELD = "order_id";
 
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcCall simpleJdbcCall;
@@ -64,35 +66,10 @@ public class OrderDAO {
                 order.getTotalPrice());
     }
 
-    public Optional<Order> findById(Long id) {
-
+    public Order findById(Long id) {
         return jdbcTemplate.queryForObject(
                 FIND_BY_ID_QUERY,
                 new Object[]{id},
-                (rs, rowNum) ->
-                        Optional.of(new Order(
-                                rs.getTimestamp(TIME_FIELD),
-                                OrderStatus.valueOf(rs.getString(STATUS_FIELD)),
-                                rs.getString(CLIENT_NAME_FIELD),
-                                rs.getBigDecimal(TOTAL_PRICE_FIELD),
-                                rs.getString(STATUS_DESCRIPTION_FIELD)
-                        ))
-        );
-    }
-
-    public void update(Order order) {
-        jdbcTemplate.update(
-                UPDATE_QUERY,
-                order.getStatus(), order.getStatusDescription(), order.getId());
-    }
-
-    public void deleteById(Long id) {
-        jdbcTemplate.update(DELETE_QUERY, id);
-    }
-
-    public List<Order> findAll() {
-        return jdbcTemplate.query(
-                FIND_ALL_QUERY,
                 (rs, rowNum) ->
                         new Order(
                                 rs.getTimestamp(TIME_FIELD),
@@ -104,23 +81,62 @@ public class OrderDAO {
         );
     }
 
-    public void createOrderWithProcedure(ReqOrderDTO reqOrderDTO) {
+    public void update(Long id, OrderStatus status, String statusDescription) {
+        jdbcTemplate.update(
+                UPDATE_QUERY,
+                status.getStatus(), statusDescription, id);
+    }
+
+    public void deleteById(Long id) {
+        jdbcTemplate.update(DELETE_QUERY, id);
+    }
+
+    public List<Order> findAllOrders() {
+        return jdbcTemplate.query(
+                FIND_ALL_QUERY,
+                (rs, rowNum) ->
+                        new Order(
+                                rs.getLong(ID_FIELD),
+                                rs.getTimestamp(TIME_FIELD),
+                                OrderStatus.valueOf(rs.getString(STATUS_FIELD)),
+                                rs.getString(CLIENT_NAME_FIELD),
+                                rs.getBigDecimal(TOTAL_PRICE_FIELD),
+                                rs.getString(STATUS_DESCRIPTION_FIELD)
+                        )
+        );
+    }
+
+    public List<OrderDetail> findItemsByOrderId(Long id) {
+        return jdbcTemplate.query(
+                String.format(FIND_ORDER_DETAILS, id),
+                (rs, rowNum) ->
+                        new OrderDetail(
+                                rs.getBigDecimal(POSITION_PRICE_FIELD),
+                                id,
+                                rs.getLong(PRODUCT_ID_FIELD),
+                                rs.getInt(PRODUCT_COUNT_FIELD)
+                        )
+        );
+    }
+
+    public void createOrderRecordWithProcedure(Order order, List<OrderDetail> details) {
 
         simpleJdbcCall = simpleJdbcCall.withProcedureName(CREATE_ORDER_PROCEDURE);
         JSONArray inArray = new JSONArray();
 
-        for (ReqOrderItemDTO item : reqOrderDTO.getPositions()) {
+        for (OrderDetail item : details) {
             JSONObject jsonItem = new JSONObject();
             jsonItem.put(PRODUCT_ID_FIELD, item.getProductId());
-            jsonItem.put(PRODUCT_COUNT_FIELD, item.getCount());
-            jsonItem.put(POSITION_PRICE_FIELD, item.getPrice());
+            jsonItem.put(PRODUCT_COUNT_FIELD, item.getProductCount());
+            jsonItem.put(POSITION_PRICE_FIELD, item.getPositionPrice());
             inArray.put(jsonItem);
         }
         SqlParameterSource in = new MapSqlParameterSource()
-                .addValue(STATUS_DESCRIPTION_IN_FIELD, reqOrderDTO.getStatusDescription())
-                .addValue(CLIENT_NAME_IN_FIELD, reqOrderDTO.getClientName())
-                .addValue(TOTAL_PRICE_IN_FIELD, Double.valueOf(reqOrderDTO.getTotal().toString()))
+                .addValue(STATUS_DESCRIPTION_IN_FIELD, order.getStatusDescription())
+                .addValue(CLIENT_NAME_IN_FIELD, order.getClientName())
+                .addValue(TOTAL_PRICE_IN_FIELD, Double.valueOf(order.getTotalPrice().toString()))
                 .addValue(IN_ARRAY_FIELD, inArray);
         simpleJdbcCall.execute(in);
     }
+
 }
