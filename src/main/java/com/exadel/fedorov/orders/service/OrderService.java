@@ -3,11 +3,11 @@ package com.exadel.fedorov.orders.service;
 import com.exadel.fedorov.orders.domain.Order;
 import com.exadel.fedorov.orders.domain.OrderDetail;
 import com.exadel.fedorov.orders.domain.OrderStatus;
-import com.exadel.fedorov.orders.dto.dto_request.ReqOrderDTO;
 import com.exadel.fedorov.orders.dto.dto_request.ReqOrderItemDTO;
 import com.exadel.fedorov.orders.dto.dto_response.RespOrderDTO;
 import com.exadel.fedorov.orders.dto.dto_response.RespOrderItemDTO;
 import com.exadel.fedorov.orders.repository.OrderDAO;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +20,13 @@ import java.util.stream.Collectors;
 @Service
 public class OrderService {
     //todo use OPTIONAL OR NOT
-
     private static final int ZERO = 0;
+
     @Autowired
-    OrderDAO orderDAO;
+    private OrderDAO orderDAO;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     public List<RespOrderDTO> findAll() {
         return convertOrdersToRespOrderDTOs(orderDAO.findAllOrders());
@@ -32,7 +35,6 @@ public class OrderService {
     public Optional<RespOrderDTO> findById(Long id) {
         Order order = orderDAO.findById(id);
         List<OrderDetail> items = orderDAO.findItemsByOrderId(id);
-
         return Optional.of(fillRespOrderDto(order, items));
     }
 
@@ -51,11 +53,10 @@ public class OrderService {
         orderDAO.createOrderRecordWithProcedure(order, details);
     }
 
-
     private BigDecimal getTotalPrice(List<ReqOrderItemDTO> orderItems) {
         BigDecimal total = new BigDecimal(ZERO);
         for (ReqOrderItemDTO item : orderItems) {
-            total = total.add(item.getPrice());
+            total = total.add(item.getPositionPrice());
         }
         return total;
     }
@@ -81,24 +82,22 @@ public class OrderService {
 
     private List<RespOrderItemDTO> convertOrderDetailsToRespOrderItemDTOs(List<OrderDetail> details) {
         return details.stream()
-//                .map(OrderItemMapper.INSTANCE::itemToRespItemDto)
                 .map(this::convertOrderDetailsToRespItemDto)
                 .collect(Collectors.toList());
     }
 
     private RespOrderItemDTO convertOrderDetailsToRespItemDto(OrderDetail orderDetail) {
-        return new RespOrderItemDTO(orderDetail.getProductId(), orderDetail.getPositionPrice(), orderDetail.getProductCount());
+        return modelMapper.map(orderDetail, RespOrderItemDTO.class);
     }
 
     private List<OrderDetail> convertReqOrderItemDTOsToOrderDetails(List<ReqOrderItemDTO> dtoList) {
         return dtoList.stream()
                 .map(this::convertReqItemDtoToOrderDetail)
-//                .map(OrderItemMapper.INSTANCE::reqItemDtoToItem)
                 .collect(Collectors.toList());
     }
 
     private OrderDetail convertReqItemDtoToOrderDetail(ReqOrderItemDTO reqOrderItemDTO) {
-        return new OrderDetail(reqOrderItemDTO.getPrice(), reqOrderItemDTO.getProductId(), reqOrderItemDTO.getCount());
+        return modelMapper.map(reqOrderItemDTO, OrderDetail.class);
     }
 
 }

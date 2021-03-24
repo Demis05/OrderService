@@ -10,10 +10,9 @@ public class OrderDetail {
 
     private Long id;
 
+    private Long orderId;
     @NonNull
     private BigDecimal positionPrice;
-
-    private Long orderId;
     @NonNull
     private Long productId;
     @NonNull

@@ -1,13 +1,14 @@
 package com.exadel.fedorov.orders.dto.dto_response;
 
-import lombok.Value;
+import lombok.Data;
+
 import java.math.BigDecimal;
 
-@Value
+@Data
 public class RespOrderItemDTO {
 
     Long productId;
-    BigDecimal totalPrice;
+    BigDecimal positionPrice;
     Integer count;
 
 }
