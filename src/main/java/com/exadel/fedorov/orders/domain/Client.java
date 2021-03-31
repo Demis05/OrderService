@@ -9,11 +9,8 @@ public class Client {
     @NonNull
     private Long id;
     @NonNull
-    private String clientName;
+    private String name;
     @NonNull
     private String login;
 
-    private Long membershipId;
 }
-
-

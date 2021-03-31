@@ -3,8 +3,6 @@ package com.exadel.fedorov.orders.repository;
 import com.exadel.fedorov.orders.domain.Order;
 import com.exadel.fedorov.orders.domain.OrderDetail;
 import com.exadel.fedorov.orders.domain.OrderStatus;
-import com.exadel.fedorov.orders.dto.dto_request.ReqOrderDTO;
-import com.exadel.fedorov.orders.dto.dto_request.ReqOrderItemDTO;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,18 +14,17 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.util.List;
-import java.util.Optional;
 
 
 @Repository
 public class OrderDAO {
 
-    private static final String CREATE_QUERY = "INSERT INTO public.orders(status, status_description, time, total_price) VALUES (?, ?, ?, ?);";
+    private static final String CREATE_QUERY = "INSERT INTO orders(status, status_description, time, total_price) VALUES (?, ?, ?, ?);";
     private static final String FIND_BY_ID_QUERY = "select * from orders where id = ?";
-    private static final String UPDATE_QUERY = "UPDATE public.orders SET status=?, status_description=?, total_price=? WHERE id = ?;";
-    private static final String FIND_ALL_QUERY = "select * from public.orders ORDER BY id ASC";
-    private static final String FIND_ORDER_DETAILS = "select * from public.order_details where order_id=%s";
-    private static final String DELETE_QUERY = "delete from public.orders where id = ?";
+    private static final String UPDATE_QUERY = "UPDATE orders SET status=?, status_description=?, total_price=? WHERE id = ?;";
+    private static final String FIND_ALL_QUERY = "select * from orders ORDER BY id ASC";
+    private static final String FIND_ORDER_DETAILS = "select * from order_details where order_id=%s";
+    private static final String DELETE_QUERY = "delete from orders where id = ?";
 
 
     private static final String TIME_FIELD = "time";
@@ -42,11 +39,10 @@ public class OrderDAO {
     private static final String TOTAL_PRICE_FIELD = "total_price";
 
     private static final String ID_FIELD = "id";
-    private static final String CREATE_ORDER_PROCEDURE = "create_order_function";
+    private static final String CREATE_ORDER_FUNCTION = "create_order_function";
     private static final String PRODUCT_ID_FIELD = "product_id";
     private static final String PRODUCT_COUNT_FIELD = "product_count";
     private static final String POSITION_PRICE_FIELD = "position_price";
-    private static final String ORDER_ID_FIELD = "order_id";
 
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcCall simpleJdbcCall;
@@ -121,7 +117,7 @@ public class OrderDAO {
 
     public void createOrderRecordWithProcedure(Order order, List<OrderDetail> details) {
 
-        simpleJdbcCall = simpleJdbcCall.withProcedureName(CREATE_ORDER_PROCEDURE);
+        simpleJdbcCall = simpleJdbcCall.withProcedureName(CREATE_ORDER_FUNCTION);
         JSONArray inArray = new JSONArray();
 
         for (OrderDetail item : details) {

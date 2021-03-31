@@ -19,13 +19,14 @@ public class Order {
     @NonNull
     private String statusDescription;
 
-    public Order(String clientName, BigDecimal totalPrice, String statusDescription) {
+    public Order(@NonNull String clientName, @NonNull BigDecimal totalPrice, @NonNull String statusDescription) {
         this.clientName = clientName;
         this.totalPrice = totalPrice;
         this.statusDescription = statusDescription;
     }
 
-    public Order(Timestamp time, OrderStatus status, String clientName, BigDecimal totalPrice, String statusDescription) {
+    public Order(Timestamp time, OrderStatus status, @NonNull String clientName,
+                 @NonNull BigDecimal totalPrice, @NonNull String statusDescription) {
         this.time = time;
         this.status = status;
         this.clientName = clientName;
@@ -33,7 +34,8 @@ public class Order {
         this.statusDescription = statusDescription;
     }
 
-    public Order(Long id, Timestamp time, OrderStatus status, String clientName, BigDecimal totalPrice, String statusDescription) {
+    public Order(Long id, Timestamp time, OrderStatus status,
+                 @NonNull String clientName, @NonNull BigDecimal totalPrice, @NonNull String statusDescription) {
         this.id = id;
         this.time = time;
         this.status = status;

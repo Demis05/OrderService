@@ -12,5 +12,7 @@ public class Contact {
     private String phone;
     @NonNull
     private String address;
+    @NonNull
+    private Long clientId;
 
 }

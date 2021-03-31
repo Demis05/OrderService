@@ -18,14 +18,14 @@ public class OrderDetail {
     @NonNull
     private Integer productCount;
 
-    public OrderDetail(BigDecimal positionPrice, Long orderId, Long productId, Integer productCount) {
+    public OrderDetail(@NonNull BigDecimal positionPrice, Long orderId, @NonNull Long productId, @NonNull Integer productCount) {
         this.positionPrice = positionPrice;
         this.orderId = orderId;
         this.productId = productId;
         this.productCount = productCount;
     }
 
-    public OrderDetail(BigDecimal positionPrice, Long productId, Integer productCount) {
+    public OrderDetail(@NonNull BigDecimal positionPrice, @NonNull Long productId, @NonNull Integer productCount) {
         this.positionPrice = positionPrice;
         this.productId = productId;
         this.productCount = productCount;

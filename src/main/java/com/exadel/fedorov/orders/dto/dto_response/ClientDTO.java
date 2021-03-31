@@ -1,12 +1,13 @@
-package com.exadel.fedorov.orders.dto.dto_request;
+package com.exadel.fedorov.orders.dto.dto_response;
 
 import lombok.Value;
 
 @Value
-public class ReqClientDTO {
+public class ClientDTO {
 
-    String name;
+    Long id;
     String login;
+    String name;
 
     String email;
     String phone;
