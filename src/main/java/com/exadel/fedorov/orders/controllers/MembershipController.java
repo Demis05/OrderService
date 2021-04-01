@@ -1,9 +1,9 @@
 package com.exadel.fedorov.orders.controllers;
 
-import com.exadel.fedorov.orders.domain.Client;
-import com.exadel.fedorov.orders.dto.dto_request.NewClientDTO;
+import com.exadel.fedorov.orders.domain.Membership;
+import com.exadel.fedorov.orders.dto.MembershipDTO;
 import com.exadel.fedorov.orders.dto.dto_response.ClientDTO;
-import com.exadel.fedorov.orders.service.ClientService;
+import com.exadel.fedorov.orders.service.MembershipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,55 +17,56 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-@RequestMapping("/rest/clients")
+@RequestMapping("/rest/memberships")
 @RestController
-public class ClientController {
+public class MembershipController {
 
-    public static final String SUCH_CLIENT_DOES_NOT_EXIST_MESSAGE = "";//TODO
+    public static final String SUCH_CLIENT_DOES_NOT_EXIST_MESSAGE = "";
     public static final String NO_CLIENTS_FOUND_MESSAGE = "";
 
     @Autowired
-    private ClientService clientService;
+    private MembershipService membershipService;
 
     @GetMapping
-    public ResponseEntity<List<ClientDTO>> readAll() {
-        List<ClientDTO> clientDTOS = clientService.findAll();
-        if (clientDTOS.isEmpty()) {
+    public ResponseEntity<List<MembershipDTO>> readAll(@PathVariable("id") Long clientId) {
+        List<MembershipDTO> membershipDTOS = membershipService.findAll(clientId);
+        if (membershipDTOS.isEmpty()) {
             return new ResponseEntity(NO_CLIENTS_FOUND_MESSAGE, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity(clientDTOS, HttpStatus.OK);
+        return new ResponseEntity(membershipDTOS, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<ClientDTO> read(@PathVariable("id") Long id) {
-        if (id == null) {
+    public ResponseEntity<ClientDTO> readCurrent(@PathVariable("id") Long clientId) {
+        if (clientId == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        Optional<ClientDTO> clientDTO = clientService.findById(id);
-        return clientDTO.map(respOrderDTO -> new ResponseEntity(clientDTO, HttpStatus.OK)).orElseGet(() -> new ResponseEntity(SUCH_CLIENT_DOES_NOT_EXIST_MESSAGE, HttpStatus.NOT_FOUND));
+        Optional<MembershipDTO> membershipDTO = membershipService.findCurrent(clientId);
+        return membershipDTO.map(respOrderDTO -> new ResponseEntity(membershipDTO, HttpStatus.OK)).orElseGet(() -> new ResponseEntity(SUCH_CLIENT_DOES_NOT_EXIST_MESSAGE, HttpStatus.NOT_FOUND));
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ResponseEntity<Client> create(@RequestBody NewClientDTO clientDTO) {
-        clientService.create(clientDTO);
+    public ResponseEntity<Membership> create(@RequestBody MembershipDTO membershipDTO) {
+        membershipService.create(membershipDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Client> update(@PathVariable("id") Long id, @RequestBody NewClientDTO updateClient) {
-        clientService.update(id, updateClient);
+    public ResponseEntity<Membership> update(@PathVariable("id") Long id, @RequestBody LocalDateTime endDate) {
+        membershipService.update(id, endDate);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Client> deleteClient(@PathVariable("id") Long id) {
-        clientService.delete(id);
+    public ResponseEntity<Membership> delete(@PathVariable("id") Long id) {
+        membershipService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

@@ -7,10 +7,12 @@ import com.exadel.fedorov.orders.dto.dto_response.ClientDTO;
 import com.exadel.fedorov.orders.repository.ClientDAO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class ClientService {
 
     @Autowired
@@ -26,17 +28,14 @@ public class ClientService {
     }
 
     public Optional<ClientDTO> findById(Long clientId) {
-        Client client = clientDAO.findById(clientId);
-        ClientDTO respClientDTO = modelMapper.map(client, ClientDTO.class);
-        return Optional.of(respClientDTO);
+        return Optional.of(clientDAO.findDTOById(clientId));
     }
 
     public List<ClientDTO> findAll() {
-        return clientDAO.findDTOs();
+        return clientDAO.findAllDTOs();
     }
 
     public void update(Long id, NewClientDTO updateClient) {
-//        public void update(Long id, String name, String login, String email, String phone, String address) {
         clientDAO.updateClient(new Client(id, updateClient.getName(), updateClient.getLogin()));
         clientDAO.updateContact(new Contact(updateClient.getEmail(), updateClient.getPhone(), updateClient.getAddress(), id));
     }

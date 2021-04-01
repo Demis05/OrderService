@@ -8,10 +8,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
+import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.util.List;
 
+@Repository
 public class ClientDAO {
 
     public static final String ID_FIELD = "id";
@@ -23,10 +25,9 @@ public class ClientDAO {
     public static final String CREATE_CLIENT_FUNCTION = "create_client_function";
     public static final String UPDATE_CLIENT_QUERY = "UPDATE clients SET name=?, login=? WHERE id=?;";
     public static final String UPDATE_CLIENT_CONTACT_QUERY = "UPDATE contacts SET email=?, phone=?, address=? WHERE client_id=?;";
-
-    public static final String DELETE_CLIENT_QUERY = "DELETE clients where id=?;";
+    public static final String DELETE_CLIENT_QUERY = "DELETE FROM clients where id=?;";
     public static final String FIND_ALL_QUERY = "select * from clients inner join contacts on clients.id = contacts.client_id;";
-    public static final String FIND_BY_ID_QUERY = "";
+    public static final String FIND_BY_ID_QUERY = "select clients.id, clients.name, clients.login,contacts.email,contacts.phone,contacts.address from clients inner join contacts on clients.id = contacts.client_id where clients.id=?;";
 
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcCall simpleJdbcCall;
@@ -48,32 +49,23 @@ public class ClientDAO {
         simpleJdbcCall.execute(in);
     }
 
-    public Client findById(Long id) {
+    public ClientDTO findDTOById(Long id) {
         return jdbcTemplate.queryForObject(
                 FIND_BY_ID_QUERY,
                 new Object[]{id},
                 (rs, rowNum) ->
-                        new Client(
+                        new ClientDTO(
                                 rs.getLong(ID_FIELD),
+                                rs.getString(LOGIN_FIELD),
                                 rs.getString(NAME_FIELD),
-                                rs.getString(LOGIN_FIELD)
+                                rs.getString(EMAIL_FIELD),
+                                rs.getString(PHONE_FIELD),
+                                rs.getString(ADDRESS_FIELD)
                         )
         );
     }
 
-    public List<Client> findAll() {
-        return jdbcTemplate.query(
-                FIND_ALL_QUERY,
-                (rs, rowNum) ->
-                        new Client(
-                                rs.getLong(ID_FIELD),
-                                rs.getString(NAME_FIELD),
-                                rs.getString(LOGIN_FIELD)
-                        )
-        );
-    }
-
-    public List<ClientDTO> findDTOs() {
+    public List<ClientDTO> findAllDTOs() {
         return jdbcTemplate.query(
                 FIND_ALL_QUERY,
                 (rs, rowNum) ->

@@ -1,8 +1,8 @@
 package com.exadel.fedorov.orders.dto.dto_request;
 
-import lombok.Value;
+import lombok.Data;
 
-@Value
+@Data
 public class NewClientDTO {
 
     String name;

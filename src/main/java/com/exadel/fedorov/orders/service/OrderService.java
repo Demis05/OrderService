@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
-    //todo use OPTIONAL OR NOT
+
     private static final int ZERO = 0;
 
     @Autowired
@@ -82,22 +82,14 @@ public class OrderService {
 
     private List<RespOrderItemDTO> convertOrderDetailsToRespOrderItemDTOs(List<OrderDetail> details) {
         return details.stream()
-                .map(this::convertOrderDetailsToRespItemDto)
+                .map(orderDetail -> modelMapper.map(orderDetail, RespOrderItemDTO.class))
                 .collect(Collectors.toList());
-    }
-
-    private RespOrderItemDTO convertOrderDetailsToRespItemDto(OrderDetail orderDetail) {
-        return modelMapper.map(orderDetail, RespOrderItemDTO.class);
     }
 
     private List<OrderDetail> convertReqOrderItemDTOsToOrderDetails(List<ReqOrderItemDTO> dtoList) {
         return dtoList.stream()
-                .map(this::convertReqItemDtoToOrderDetail)
+                .map(reqOrderItemDTO -> modelMapper.map(reqOrderItemDTO, OrderDetail.class))
                 .collect(Collectors.toList());
-    }
-
-    private OrderDetail convertReqItemDtoToOrderDetail(ReqOrderItemDTO reqOrderItemDTO) {
-        return modelMapper.map(reqOrderItemDTO, OrderDetail.class);
     }
 
 }
