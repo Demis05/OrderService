@@ -12,11 +12,11 @@ import java.util.List;
 @Repository
 public class MembershipDAO {
 
+    public static final String CREATE_MEMBERSHIP_QUERY = "INSERT INTO memberships(id, client_id, title, start_date, end_date, validity, discount) VALUES (DEFAULT, ?, ?, ?, ?, ?, ?)";
+    public static final String FIND_CURRENT_MEMBERSHIP_QUERY = "SELECT * FROM memberships WHERE client_id=? AND memberships.end_date>CURRENT_TIMESTAMP;";
+    public static final String FIND_CLIENT_MEMBERSHIPS_QUERY = "SELECT * FROM memberships WHERE client_id=%s";
     public static final String UPDATE_MEMBERSHIP_QUERY = "UPDATE memberships SET end_date=? WHERE id=?;";
     public static final String DELETE_MEMBERSHIP_QUERY = "DELETE FROM memberships WHERE id=?;";
-    public static final String FIND_CLIENT_MEMBERSHIPS_QUERY = "select * from memberships where client_id=%s";
-    public static final String CREATE_MEMBERSHIP_QUERY = "INSERT INTO memberships(id, client_id, title, start_date, end_date, validity, discount) VALUES (DEFAULT, ?, ?, ?, ?, ?, ?)";
-    public static final String FIND_CURRENT_MEMBERSHIP_QUERY = "select * from memberships where client_id=? and memberships.end_date>CURRENT_TIMESTAMP;";
 
     public static final String ID_FIELD = "id";
     public static final String TITLE_FIELD = "title";

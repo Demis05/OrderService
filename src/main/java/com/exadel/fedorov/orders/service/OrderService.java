@@ -28,8 +28,10 @@ public class OrderService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public List<RespOrderDTO> findAll() {
-        return convertOrdersToRespOrderDTOs(orderDAO.findAllOrders());
+    public void createOrder(List<ReqOrderItemDTO> orderItems, String clientName, String statusDescription) {
+        Order order = new Order(clientName, getTotalPrice(orderItems), statusDescription);
+        List<OrderDetail> details = convertReqOrderItemDTOsToOrderDetails(orderItems);
+        orderDAO.createOrderRecordWithProcedure(order, details);
     }
 
     public Optional<RespOrderDTO> findById(Long id) {
@@ -38,19 +40,16 @@ public class OrderService {
         return Optional.of(fillRespOrderDto(order, items));
     }
 
+    public List<RespOrderDTO> findAll() {
+        return convertOrdersToRespOrderDTOs(orderDAO.findAllOrders());
+    }
+
     public void update(Long id, String status, String statusDescription) {
         orderDAO.update(id, OrderStatus.valueOf(status), statusDescription);
     }
 
     public void deleteById(Long id) {
         orderDAO.deleteById(id);
-    }
-
-    public void createOrder(List<ReqOrderItemDTO> orderItems, String clientName, String statusDescription) {
-        Order order = new Order(clientName, getTotalPrice(orderItems), statusDescription);
-
-        List<OrderDetail> details = convertReqOrderItemDTOsToOrderDetails(orderItems);
-        orderDAO.createOrderRecordWithProcedure(order, details);
     }
 
     private BigDecimal getTotalPrice(List<ReqOrderItemDTO> orderItems) {

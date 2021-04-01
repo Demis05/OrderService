@@ -21,6 +21,21 @@ public class MembershipService {
     @Autowired
     private ModelMapper modelMapper;
 
+    public void create(MembershipDTO membershipDTO) {
+        membershipDAO.create(modelMapper.map(membershipDTO, Membership.class));
+    }
+
+    public Optional<MembershipDTO> findCurrent(Long clientId) {
+        MembershipDTO membershipDTO = convertMembershipToDto(membershipDAO.findCurrent(clientId));
+        return Optional.of(membershipDTO);
+    }
+
+    public List<MembershipDTO> findAll(Long clientId) {
+        return membershipDAO.findAll(clientId).stream()
+                .map(this::convertMembershipToDto)
+                .collect(Collectors.toList());
+    }
+
     public void update(Long id, LocalDateTime endDate) {
         membershipDAO.update(id, endDate);
     }
@@ -29,25 +44,7 @@ public class MembershipService {
         membershipDAO.delete(id);
     }
 
-    public void create(MembershipDTO membershipDTO) {
-        membershipDAO.create(modelMapper.map(membershipDTO, Membership.class));
-    }
-
-    public Optional<MembershipDTO> findCurrent(Long clientId) {
-        Membership membership = membershipDAO.findCurrent(clientId);
-        MembershipDTO membershipDTO = modelMapper.map(membership, MembershipDTO.class);
-        membershipDTO.setStartDate(membership.getStartDate().toLocalDateTime());
-        membershipDTO.setEndDate(membership.getEndDate().toLocalDateTime());
-        return Optional.of(membershipDTO);
-    }
-
-    public List<MembershipDTO> findAll(Long clientId) {
-        return membershipDAO.findAll(clientId).stream()
-                .map(this::getMembershipMembershipDTOFunction)
-                .collect(Collectors.toList());
-    }
-
-    private MembershipDTO getMembershipMembershipDTOFunction(Membership membership) {
+    private MembershipDTO convertMembershipToDto(Membership membership) {
         MembershipDTO membershipDTO = modelMapper.map(membership, MembershipDTO.class);
         membershipDTO.setStartDate(membership.getStartDate().toLocalDateTime());
         membershipDTO.setEndDate(membership.getEndDate().toLocalDateTime());

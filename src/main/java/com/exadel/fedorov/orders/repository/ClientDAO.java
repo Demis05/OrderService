@@ -16,18 +16,19 @@ import java.util.List;
 @Repository
 public class ClientDAO {
 
+    public static final String CREATE_CLIENT_FUNCTION = "create_client_function";
+    public static final String UPDATE_CLIENT_QUERY = "UPDATE clients SET name=?, login=? WHERE id=?;";
+    public static final String UPDATE_CLIENT_CONTACT_QUERY = "UPDATE contacts SET email=?, phone=?, address=? WHERE client_id=?;";
+    public static final String DELETE_CLIENT_QUERY = "DELETE FROM clients where id=?;";
+    public static final String FIND_ALL_QUERY = "SELECT * FROM clients INNER JOIN contacts on clients.id = contacts.client_id;";
+    public static final String FIND_BY_ID_QUERY = "SELECT clients.id, clients.name, clients.login,contacts.email,contacts.phone,contacts.address FROM clients INNER JOIN contacts ON clients.id = contacts.client_id WHERE clients.id=?;";
+
     public static final String ID_FIELD = "id";
     public static final String NAME_FIELD = "name";
     public static final String LOGIN_FIELD = "login";
     public static final String EMAIL_FIELD = "email";
     public static final String PHONE_FIELD = "phone";
     public static final String ADDRESS_FIELD = "address";
-    public static final String CREATE_CLIENT_FUNCTION = "create_client_function";
-    public static final String UPDATE_CLIENT_QUERY = "UPDATE clients SET name=?, login=? WHERE id=?;";
-    public static final String UPDATE_CLIENT_CONTACT_QUERY = "UPDATE contacts SET email=?, phone=?, address=? WHERE client_id=?;";
-    public static final String DELETE_CLIENT_QUERY = "DELETE FROM clients where id=?;";
-    public static final String FIND_ALL_QUERY = "select * from clients inner join contacts on clients.id = contacts.client_id;";
-    public static final String FIND_BY_ID_QUERY = "select clients.id, clients.name, clients.login,contacts.email,contacts.phone,contacts.address from clients inner join contacts on clients.id = contacts.client_id where clients.id=?;";
 
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcCall simpleJdbcCall;
