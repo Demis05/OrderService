@@ -35,9 +35,9 @@ public class OrderService {
     }
 
     public Optional<RespOrderDTO> findById(Long id) {
-        Order order = orderDAO.findById(id);
+        Optional<Order> order = Optional.ofNullable(orderDAO.findById(id));
         List<OrderDetail> items = orderDAO.findItemsByOrderId(id);
-        return Optional.of(fillRespOrderDto(order, items));
+        return order.map(value -> fillRespOrderDto(value, items));
     }
 
     public List<RespOrderDTO> findAll() {

@@ -3,7 +3,9 @@ package com.exadel.fedorov.orders.repository;
 import com.exadel.fedorov.orders.domain.Client;
 import com.exadel.fedorov.orders.domain.Contact;
 import com.exadel.fedorov.orders.dto.dto_response.ClientDTO;
+import com.exadel.fedorov.orders.exception.NoSuchDataException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -11,6 +13,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -51,34 +54,42 @@ public class ClientDAO {
     }
 
     public ClientDTO findDTOById(Long id) {
-        return jdbcTemplate.queryForObject(
-                FIND_BY_ID_QUERY,
-                new Object[]{id},
-                (rs, rowNum) ->
-                        new ClientDTO(
-                                rs.getLong(ID_FIELD),
-                                rs.getString(LOGIN_FIELD),
-                                rs.getString(NAME_FIELD),
-                                rs.getString(EMAIL_FIELD),
-                                rs.getString(PHONE_FIELD),
-                                rs.getString(ADDRESS_FIELD)
-                        )
-        );
+        try {
+            return jdbcTemplate.queryForObject(
+                    FIND_BY_ID_QUERY,
+                    new Object[]{id},
+                    (rs, rowNum) ->
+                            new ClientDTO(
+                                    rs.getLong(ID_FIELD),
+                                    rs.getString(LOGIN_FIELD),
+                                    rs.getString(NAME_FIELD),
+                                    rs.getString(EMAIL_FIELD),
+                                    rs.getString(PHONE_FIELD),
+                                    rs.getString(ADDRESS_FIELD)
+                            )
+            );
+        } catch (EmptyResultDataAccessException exc) {
+            return null;
+        }
     }
 
     public List<ClientDTO> findAllDTOs() {
-        return jdbcTemplate.query(
-                FIND_ALL_QUERY,
-                (rs, rowNum) ->
-                        new ClientDTO(
-                                rs.getLong(ID_FIELD),
-                                rs.getString(LOGIN_FIELD),
-                                rs.getString(NAME_FIELD),
-                                rs.getString(EMAIL_FIELD),
-                                rs.getString(PHONE_FIELD),
-                                rs.getString(ADDRESS_FIELD)
-                        )
-        );
+        try {
+            return jdbcTemplate.query(
+                    FIND_ALL_QUERY,
+                    (rs, rowNum) ->
+                            new ClientDTO(
+                                    rs.getLong(ID_FIELD),
+                                    rs.getString(LOGIN_FIELD),
+                                    rs.getString(NAME_FIELD),
+                                    rs.getString(EMAIL_FIELD),
+                                    rs.getString(PHONE_FIELD),
+                                    rs.getString(ADDRESS_FIELD)
+                            )
+            );
+        } catch (EmptyResultDataAccessException exc) {
+            return new ArrayList<>();
+        }
     }
 
     public void updateClient(Client client) {

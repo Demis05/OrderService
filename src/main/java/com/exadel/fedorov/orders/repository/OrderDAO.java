@@ -6,6 +6,7 @@ import com.exadel.fedorov.orders.domain.OrderStatus;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -66,18 +67,22 @@ public class OrderDAO {
     }
 
     public Order findById(Long id) {
-        return jdbcTemplate.queryForObject(
-                FIND_BY_ID_QUERY,
-                new Object[]{id},
-                (rs, rowNum) ->
-                        new Order(
-                                rs.getTimestamp(TIME_FIELD),
-                                OrderStatus.valueOf(rs.getString(STATUS_FIELD)),
-                                rs.getString(CLIENT_NAME_FIELD),
-                                rs.getBigDecimal(TOTAL_PRICE_FIELD),
-                                rs.getString(STATUS_DESCRIPTION_FIELD)
-                        )
-        );
+        try {
+            return jdbcTemplate.queryForObject(
+                    FIND_BY_ID_QUERY,
+                    new Object[]{id},
+                    (rs, rowNum) ->
+                            new Order(
+                                    rs.getTimestamp(TIME_FIELD),
+                                    OrderStatus.valueOf(rs.getString(STATUS_FIELD)),
+                                    rs.getString(CLIENT_NAME_FIELD),
+                                    rs.getBigDecimal(TOTAL_PRICE_FIELD),
+                                    rs.getString(STATUS_DESCRIPTION_FIELD)
+                            )
+            );
+        } catch (EmptyResultDataAccessException exc) {
+            return null;
+        }
     }
 
     public List<Order> findAllOrders() {

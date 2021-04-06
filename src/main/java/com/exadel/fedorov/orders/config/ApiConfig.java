@@ -33,15 +33,6 @@ public class ApiConfig implements WebMvcConfigurer {
         return new ModelMapper();
     }
 
-//    @Bean
-//    public Docket api() {
-//        return new Docket(DocumentationType.SWAGGER_2)
-//                .select()
-//                .apis(RequestHandlerSelectors.basePackage("com.exadel.fedorov.rest"))
-//                .paths(PathSelectors.ant("/rest/**"))
-//                .build();
-//    }
-
     @Bean(name = "dataSource")
     public DataSource getDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();

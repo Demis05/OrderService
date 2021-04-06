@@ -2,11 +2,13 @@ package com.exadel.fedorov.orders.repository;
 
 import com.exadel.fedorov.orders.domain.Membership;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -46,39 +48,47 @@ public class MembershipDAO {
     }
 
     public Membership findCurrent(Long clientId) {
-        return jdbcTemplate.queryForObject(
-                FIND_CURRENT_MEMBERSHIP_QUERY,
-                new Object[]{clientId},
-                (rs, rowNum) ->
-                        new Membership(
-                                rs.getLong(ID_FIELD),
-                                rs.getString(TITLE_FIELD),
-                                rs.getString(VALIDITY_FIELD),
-                                rs.getTimestamp(START_DATE_FIELD),
-                                rs.getTimestamp(END_DATE_FIELD),
-                                rs.getInt(DISCOUNT_FIELD),
-                                rs.getLong(CLIENT_ID_FIELD)
-                        )
-        );
+        try {
+            return jdbcTemplate.queryForObject(
+                    FIND_CURRENT_MEMBERSHIP_QUERY,
+                    new Object[]{clientId},
+                    (rs, rowNum) ->
+                            new Membership(
+                                    rs.getLong(ID_FIELD),
+                                    rs.getString(TITLE_FIELD),
+                                    rs.getString(VALIDITY_FIELD),
+                                    rs.getTimestamp(START_DATE_FIELD),
+                                    rs.getTimestamp(END_DATE_FIELD),
+                                    rs.getInt(DISCOUNT_FIELD),
+                                    rs.getLong(CLIENT_ID_FIELD)
+                            )
+            );
+        } catch (EmptyResultDataAccessException exc) {
+            return null;
+        }
     }
 
     public List<Membership> findAll(Long clientId) {
-        return jdbcTemplate.query(
-                String.format(FIND_CLIENT_MEMBERSHIPS_QUERY, clientId),
-                (rs, rowNum) ->
-                        new Membership(
-                                rs.getLong(ID_FIELD),
-                                rs.getString(TITLE_FIELD),
-                                rs.getString(VALIDITY_FIELD),
-                                rs.getTimestamp(START_DATE_FIELD),
-                                rs.getTimestamp(END_DATE_FIELD),
-                                rs.getInt(DISCOUNT_FIELD),
-                                rs.getLong(ID_FIELD)
-                        )
-        );
+        try {
+            return jdbcTemplate.query(
+                    String.format(FIND_CLIENT_MEMBERSHIPS_QUERY, clientId),
+                    (rs, rowNum) ->
+                            new Membership(
+                                    rs.getLong(ID_FIELD),
+                                    rs.getString(TITLE_FIELD),
+                                    rs.getString(VALIDITY_FIELD),
+                                    rs.getTimestamp(START_DATE_FIELD),
+                                    rs.getTimestamp(END_DATE_FIELD),
+                                    rs.getInt(DISCOUNT_FIELD),
+                                    rs.getLong(ID_FIELD)
+                            )
+            );
+        } catch (EmptyResultDataAccessException exc) {
+            return new ArrayList<>();
+        }
     }
 
-    public void update(Long id, LocalDateTime endDate) {
+    public void update(Long id, LocalDateTime endDate) {//не приходит отриц рез
         jdbcTemplate.update(
                 UPDATE_MEMBERSHIP_QUERY,
                 endDate,

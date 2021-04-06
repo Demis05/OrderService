@@ -27,8 +27,8 @@ public class ClientService {
         clientDAO.create(client, contact);
     }
 
-    public Optional<ClientDTO> findById(Long clientId) {
-        return Optional.of(clientDAO.findDTOById(clientId));
+    public Optional<ClientDTO> findById(Long id) {
+        return Optional.ofNullable(clientDAO.findDTOById(id));
     }
 
     public List<ClientDTO> findAll() {

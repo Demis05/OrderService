@@ -8,7 +8,6 @@ public class ClientDTO {
     Long id;
     String login;
     String name;
-
     String email;
     String phone;
     String address;

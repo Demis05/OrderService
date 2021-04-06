@@ -26,8 +26,9 @@ public class MembershipService {
     }
 
     public Optional<MembershipDTO> findCurrent(Long clientId) {
-        MembershipDTO membershipDTO = convertMembershipToDto(membershipDAO.findCurrent(clientId));
-        return Optional.of(membershipDTO);
+        Membership membership = membershipDAO.findCurrent(clientId);
+        Optional<Membership> optional = Optional.ofNullable(membership);
+        return optional.map(value -> convertMembershipToDto(membership));
     }
 
     public List<MembershipDTO> findAll(Long clientId) {

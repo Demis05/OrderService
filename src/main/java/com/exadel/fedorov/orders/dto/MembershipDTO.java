@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 @Data
 public class MembershipDTO {
 
-    Long id;
+    Long clientId;
     String title;
     String validity;
     LocalDateTime startDate;
