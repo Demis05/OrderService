@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -63,7 +64,8 @@ public class MembershipController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ResponseEntity<Membership> create(@RequestBody MembershipDTO membershipDTO) {
+    public ResponseEntity<Membership> create(@RequestBody MembershipDTO membershipDTO) throws SQLException {
+        System.out.println(membershipDTO);
         membershipService.create(membershipDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

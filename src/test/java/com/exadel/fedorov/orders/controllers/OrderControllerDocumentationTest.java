@@ -15,8 +15,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
 @SpringBootTest(classes = Application.class)
-class MembershipControllerDocumentationTest {
+class OrderControllerDocumentationTest {
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -50,103 +48,122 @@ class MembershipControllerDocumentationTest {
     @Test
     void getTest() throws Exception {
 
-        this.mockMvc.perform(get("/rest/memberships/{id}", 3).contentType(MediaTypes.HAL_JSON)
+        this.mockMvc.perform(get("/rest/orders/{id}", 1).contentType(MediaTypes.HAL_JSON)
         ).andExpect(status().isOk())
                 .andDo(document("crud-get-example",
                         preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint())
-                ));
+                        preprocessResponse(prettyPrint())));
+
+                /*
+                        requestFields(//fieldWithPath("id").description("The id of the input" +
+                                // collectionToDelimitedString(desc.descriptionsForProperty("id"), ". ")),
+
+    */
     }
 
     @Test
     void createTest() throws Exception {
         Map<String, Object> crud = new HashMap<>();
-        crud.put("clientId", 1L);
-        crud.put("title", "standart discount");
-        crud.put("validity", "2 mons 1 days");
-        crud.put("startDate", "2021-06-10 00:00");
-        crud.put("endDate", "2021-07-10 00:00");
-        crud.put("discount", 30);
+        crud.put("name", "Bob Johnson");
+        crud.put("login", "NewBobJJ");
+        crud.put("email", "emmmNew@gggggg.com");
+        crud.put("phone", "123333333333333");
+        crud.put("address", "Example street 100");
 
-        this.mockMvc.perform(post("/rest/memberships").contentType(MediaTypes.HAL_JSON)
+        this.mockMvc.perform(post("/rest/orders").contentType(MediaTypes.HAL_JSON)
                 .content(this.objectMapper.writeValueAsString(crud)))
                 .andExpect(status().isCreated())
                 .andDo(document("create-crud-test",
-                        requestFields(
-                                fieldWithPath("clientId").description("The client id of the input membership."),
-                                fieldWithPath("title").description("The title of the input membership."),
-                                fieldWithPath("validity").description("The validity of the input membership."),
-                                fieldWithPath("startDate").description("The start date of the input membership."),
-                                fieldWithPath("endDate").description("The end date of the input membership."),
-                                fieldWithPath("discount").description("The discount of the input membership.")
+                        requestFields(fieldWithPath("name").description("The name of the input client."),
+                                fieldWithPath("login").description("The login of the input client."),
+                                fieldWithPath("email").description("The email of the input client."),
+                                fieldWithPath("phone").description("The phone of the input client."),
+                                fieldWithPath("address").description("The address of the input client.")
                         )));
     }
 
     @Test
     void updateTest() throws Exception {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        LocalDateTime end = LocalDateTime.parse("2021-07-10 00:00", formatter);
+        Map<String, Object> crud = new HashMap<>();
+        crud.put("name", "Bob Johnson");
+        crud.put("login", "NewBobJJ");
+        crud.put("email", "emmmNew@gggggg.com");
+        crud.put("phone", "123333333333333");
+        crud.put("address", "Example street 100");
 
-        this.mockMvc.perform(put("/rest/memberships/{id}", 2).contentType(MediaTypes.HAL_JSON)
-                .content(this.objectMapper.writeValueAsString(end)))
+        this.mockMvc.perform(put("/rest/orders/{id}", 2).contentType(MediaTypes.HAL_JSON)
+                .content(this.objectMapper.writeValueAsString(crud)))
                 .andExpect(status().isOk())
                 .andDo(document("update-crud-test",
-                        requestFields(
-                                fieldWithPath("clientId").description("The client id of the input membership."),
-                                fieldWithPath("title").description("The title of the input membership."),
-                                fieldWithPath("validity").description("The validity of the input membership."),
-                                fieldWithPath("startDate").description("The start date of the input membership."),
-                                fieldWithPath("endDate").description("The end date of the input membership."),
-                                fieldWithPath("discount").description("The discount of the input membership.")
+                        requestFields(fieldWithPath("name").description("The name of the input client."),
+                                fieldWithPath("login").description("The login of the input client."),
+                                fieldWithPath("email").description("The email of the input client."),
+                                fieldWithPath("phone").description("The phone of the input client."),
+                                fieldWithPath("address").description("The address of the input client.")
                         )));
     }
 
     @Test
     void updateWithInvalidIdTest() throws Exception {
         Map<String, Object> crud = new HashMap<>();
-        crud.put("endDate", "endDate");
+        crud.put("name", "Bob Johnson");
+        crud.put("login", "NewBobJJ");
+        crud.put("email", "emmmNew@gggggg.com");
+        crud.put("phone", "123333333333333");
+        crud.put("address", "Example street 100");
 
-        this.mockMvc.perform(put("/rest/memberships/{id}", -5).contentType(MediaTypes.HAL_JSON)
+        this.mockMvc.perform(put("/rest/orders/{id}", -5).contentType(MediaTypes.HAL_JSON)
                 .content(this.objectMapper.writeValueAsString(crud)))
                 .andExpect(status().is(400))
                 .andDo(document("update-crud-with-zero-id-test",
-                        requestFields(
-                                fieldWithPath("endDate").description("The new end date of the input membership.")
+                        requestFields(fieldWithPath("name").description("The name of the input client."),
+                                fieldWithPath("login").description("The login of the input client."),
+                                fieldWithPath("email").description("The email of the input client."),
+                                fieldWithPath("phone").description("The phone of the input client."),
+                                fieldWithPath("address").description("The address of the input client.")
                         )));
     }
 
     @Test
     void updateWithInvalidIdTest2() throws Exception {
         Map<String, Object> crud = new HashMap<>();
-        crud.put("endDate", "endDate");
+        crud.put("name", "Bob Johnson");
+        crud.put("login", "NewBobJJ");
+        crud.put("email", "emmmNew@gggggg.com");
+        crud.put("phone", "123333333333333");
+        crud.put("address", "Example street 100");
 
-        this.mockMvc.perform(put("/rest/memberships/{id}", 0).contentType(MediaTypes.HAL_JSON)
+        this.mockMvc.perform(put("/rest/orders/{id}", 0).contentType(MediaTypes.HAL_JSON)
                 .content(this.objectMapper.writeValueAsString(crud)))
                 .andExpect(status().is(400))
                 .andDo(document("update-crud-with-negative-id-test",
-                        requestFields(
-                                fieldWithPath("endDate").description("The end date of the input membership.")
+                        requestFields(fieldWithPath("name").description("The name of the input client."),
+                                fieldWithPath("login").description("The login of the input client."),
+                                fieldWithPath("email").description("The email of the input client."),
+                                fieldWithPath("phone").description("The phone of the input client."),
+                                fieldWithPath("address").description("The address of the input client.")
                         )));
     }
 
     @Test
     void deleteTest() throws Exception {
-        this.mockMvc.perform(delete("/rest/memberships/{id}", 60))
+        this.mockMvc.perform(delete("/rest/orders/{id}", 6))
                 .andExpect(status().is(204))
                 .andDo(document("crud-delete-test", pathParameters(parameterWithName("id").description("The id of the input to delete"))));
     }
 
     @Test
     void deleteWithInvalidIdTest() throws Exception {
-        this.mockMvc.perform(delete("/rest/memberships/{id}", 0))
+        this.mockMvc.perform(delete("/rest/orders/{id}", 0))
                 .andExpect(status().is(400))
                 .andDo(document("crud-delete-with-zero-id", pathParameters(parameterWithName("id").description("The id of the input to delete"))));
     }
 
     @Test
     void deleteWithInvalidIdTest2() throws Exception {
-        this.mockMvc.perform(delete("/rest/memberships/{id}", -5))
+        this.mockMvc.perform(delete("/rest/orders/{id}", -5))
                 .andExpect(status().is(400))
                 .andDo(document("crud-delete-with-negative-id", pathParameters(parameterWithName("id").description("The id of the input to delete"))));
     }
+
 }

@@ -1,12 +1,14 @@
 package com.exadel.fedorov.orders.repository;
 
 import com.exadel.fedorov.orders.domain.Membership;
+import org.postgresql.util.PGInterval;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +37,7 @@ public class MembershipDAO {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public void create(Membership membership) {
+    public void create(Membership membership) throws SQLException {
         jdbcTemplate.update(
                 CREATE_MEMBERSHIP_QUERY,
                 membership.getClientId(),
@@ -56,7 +58,7 @@ public class MembershipDAO {
                             new Membership(
                                     rs.getLong(ID_FIELD),
                                     rs.getString(TITLE_FIELD),
-                                    rs.getString(VALIDITY_FIELD),
+                                    new PGInterval(rs.getString(VALIDITY_FIELD)),
                                     rs.getTimestamp(START_DATE_FIELD),
                                     rs.getTimestamp(END_DATE_FIELD),
                                     rs.getInt(DISCOUNT_FIELD),
@@ -76,7 +78,7 @@ public class MembershipDAO {
                             new Membership(
                                     rs.getLong(ID_FIELD),
                                     rs.getString(TITLE_FIELD),
-                                    rs.getString(VALIDITY_FIELD),
+                                    new PGInterval(rs.getString(VALIDITY_FIELD)),
                                     rs.getTimestamp(START_DATE_FIELD),
                                     rs.getTimestamp(END_DATE_FIELD),
                                     rs.getInt(DISCOUNT_FIELD),
@@ -88,7 +90,7 @@ public class MembershipDAO {
         }
     }
 
-    public void update(Long id, LocalDateTime endDate) {//не приходит отриц рез
+    public void update(Long id, LocalDateTime endDate) {//TODO не приходит отриц рез
         jdbcTemplate.update(
                 UPDATE_MEMBERSHIP_QUERY,
                 endDate,

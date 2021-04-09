@@ -2,9 +2,9 @@ package com.exadel.fedorov.orders.domain;
 
 import lombok.Data;
 import lombok.NonNull;
+import org.postgresql.util.PGInterval;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 @Data
 public class Membership {
@@ -14,7 +14,7 @@ public class Membership {
     @NonNull
     String title;
     @NonNull
-    String validity;
+    PGInterval validity;
     @NonNull
     Timestamp startDate;
     @NonNull
