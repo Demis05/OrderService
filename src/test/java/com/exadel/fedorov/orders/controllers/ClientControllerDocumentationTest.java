@@ -74,7 +74,8 @@ class ClientControllerDocumentationTest {
                 .content(this.objectMapper.writeValueAsString(crud)))
                 .andExpect(status().isCreated())
                 .andDo(document("create-crud-test",
-                        requestFields(fieldWithPath("name").description("The name of the input client."),
+                        requestFields(
+                                fieldWithPath("name").description("The name of the input client."),
                                 fieldWithPath("login").description("The login of the input client."),
                                 fieldWithPath("email").description("The email of the input client."),
                                 fieldWithPath("phone").description("The phone of the input client."),
